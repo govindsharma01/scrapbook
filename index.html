@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>Zenlan Scrapbook Example</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link type='text/css' href="lib/bootstrap-modal.css" rel="stylesheet" />
+    <link type='text/css' href="lib/isotope.css" rel='stylesheet'/>
+    <style>
+      body {color:#fff;background:#000;}
+      .hide {display:none;}
+      .right {float:right;}
+      .left {float:left;}
+      .banner {
+        background:#000;
+        width:auto;
+        position:fixed;
+        top:0;
+        margin-bottom:10px;
+        z-index:100;
+      }
+      #results {
+        width:auto;
+        position:relative;
+        top:50px;
+        clear:both;
+      }
+      #results img {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+      }
+      .modal {
+        background-color: #333;
+        color: #eee;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="left">
+        <h4>Zenlan Scrapbook Example</h4>
+      </div>
+      <div class="right">
+        <a id="btn-scrapbook" href="#scrapbooks" role="button" class="btn" data-toggle="modal" data-placement="bottom" title="scrapbooks"><i class="icon-book"></i></a>
+      </div>
+    </div>
+    <div id="results">
+      <ul id="results-list" class="inline">
+        <li id="example1"><img src="placeholder.png" title="Image 1"></li>
+        <li id="example2"><img src="placeholder.png" title="Image 2"></li>
+        <li id="example3"><img src="placeholder.png" title="Image 3"></li>
+        <li id="example4"><img src="placeholder.png" title="Image 4"></li>
+        <li id="example5"><img src="placeholder.png" title="Image 5"></li>
+        <li id="example6"><img src="placeholder.png" title="Image 6"></li>
+        <li id="example7"><img src="placeholder.png" title="Image 7"></li>
+        <li id="example8"><img src="placeholder.png" title="Image 8"></li>
+      </ul>
+    </div>
+    <!--SCRAPBOOK-->
+    <div id="scrapbooks" class="modal container hide" tabindex="-1" role="dialog" aria-labelledby="scrapbooksLabel" aria-hidden="true">
+      <div class="modal-header">
+        <div>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="white">&chi;</span></button>
+          <p id="scrapbooksLabel">scrapbooks</p>
+          <div class="input-append">
+            <select id="library" class="selectpicker" title="select">
+              <option value="default">default</option>
+            </select>
+            <a role="button" class="btn" id="btn-empty" title="empty"><i class="icon-remove-circle"></i></a>
+            <a role="button" class="btn" id="btn-delete" title="delete"><i class="icon-trash"></i></a>
+          </div>
+          <div class="input-append">
+            <input id="newbook" class="input input-small" type="text" value="" title="new"/>
+            <button class="btn" id="btn-save" title="save"><i class="icon-asterisk"></i></button>
+          </div>
+          <div id="object" title="object" class="hide">
+            <p>
+              <a id="btn-object-link" class="btn" href="" target="_blank" title="go to page"><i class="icon-eye-open"></i></a>
+              <a id="btn-object-remove" class="btn" title="remove"><i class="icon-remove"></i></a>
+              <a id="btn-object-hide" class="btn" title="hide"><i class="icon-circle-arrow-down"></i></a>
+            </p>
+            <p><span id="object-title">title</span></p>
+            <p><img id="object-image" src="placeholder.png" alt=""/></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="scrapbook" class="isotope">
+          <ul id="scrapbook-list" class="unstyled"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://caja.appspot.com/html-css-sanitizer-minified.js"></script>
+    <script type="text/javascript" src="lib/jquery.isotope.min.js"></script>
+    <script type="text/javascript" src="zenlan.scrapbook.js"></script>
+    <script>
+      jQuery(document).ready(function($) {
+
+        // example: replace with own event handler(s)
+        $('#results li').click(function(){
+          var url = 'http://www.example.com';
+          $(this).attr('data-url', url);
+          window.zsbObj.addToScrapbook(this);
+          alert('added ' + $(this).attr('id') + ' to scrapbook');
+        });
+      });
+    </script>
+  </body>
+</html>
