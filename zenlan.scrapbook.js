@@ -29,9 +29,6 @@ jQuery(document).ready(function($) {
   window.zsbObj = $(obj).data('zsbObj');
   window.zsbObj.initialise();
 
-  zsbIsotopeCallback = function() {
-    window.zsbObj.saveScrapbook();
-  }
 });
 
 var zenlanScrapbook = {
@@ -67,8 +64,6 @@ var zenlanScrapbook = {
     if (base.options.name.length > 0) {
       base.options.libraryIndex = base.options.name + ':library';
     }
-    base.elem  = elem;
-    base.$elem = $(elem);
     base.elems = {};
     $.each(base.default_elems, function(key, value) {
       base.elems[key] = $(document.getElementById(value));
@@ -128,14 +123,16 @@ var zenlanScrapbook = {
     base.hideObject();
     base.elems.newbook.val('');
     base.elems.scrapbook.empty();
-    base.resetIsotope(this.elems.scrapbook);
+    base.resetIsotope(base.elems.scrapbook);
     try {
       var $items = $(base.getScrapbook());
       $items.imagesLoaded(function(){
         $items.each(function(){
           base.handleScrapbookItem($(this));
         });
-        base.elems.scrapbook.isotope('insert', $items, zsbIsotopeCallback);
+        base.elems.scrapbook.isotope('insert', $items, function(){
+          base.saveScrapbook();
+        });
       //this.elems.btnScrap.text(this.options.currentbook);
       });
     } catch (error) {
@@ -286,10 +283,8 @@ var zenlanScrapbook = {
   },
 
   addToScrapbook : function(item) {
-    if (!item.hasOwnProperty('id')) {
-      return;
-    }
-    if (item.id == this.elems.scrapbook.find('#' + item.id).attr('id')) {
+    var id = $(item).attr('id');
+    if (id == this.elems.scrapbook.find('#' + item.id).attr('id')) {
       return;
     }
     var src, title, url;
@@ -328,7 +323,9 @@ var zenlanScrapbook = {
       base.elems.btnRemove.attr('data-id', $(this).attr('id')).click(function() {
         base.elems.object.css('display', 'none');
         var item = base.elems.scrapbook.find('#' + $(this).attr('data-id'));
-        base.elems.scrapbook.isotope('remove', item, zsbIsotopeCallback);
+        base.elems.scrapbook.isotope('remove', item, function(){
+          base.saveScrapbook();
+        });
       });
     });
   },
@@ -350,6 +347,7 @@ var zenlanScrapbook = {
     }
     $.fn.modal.defaults.focusOn = base.elems.library;
     //$.fn.modal.defaults.modalOverflow = true;
+    base.showScrapbook();
     base.initIsotope(this.elems.scrapbook);
     base.showLibraryList(base.getLastBook());
     $('#scrapbooks').on('shown', function () {
