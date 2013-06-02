@@ -264,13 +264,18 @@ var zenlanScrapbook = {
     var content = '';
     if(typeof(Storage)!=='undefined') {
       content = localStorage.getItem(this.getStorageName());
+      if (content == null) {
+        content = '';
+      }
     }
     return content;
   },
 
-  saveScrapbook : function () {
+  saveScrapbook : function (content) {
     if(typeof(Storage) !== 'undefined') {
-      var content = this.elems.scrapbook.html();
+      if (typeof content == 'undefined') {
+        content = this.elems.scrapbook.html();
+      }
       localStorage.setItem(this.getStorageName(), content);
     }
   },
@@ -283,6 +288,7 @@ var zenlanScrapbook = {
   },
 
   addToScrapbook : function(item) {
+    var base = this;
     var id = $(item).attr('id');
     if (id == this.elems.scrapbook.find('#' + item.id).attr('id')) {
       return;
@@ -302,9 +308,14 @@ var zenlanScrapbook = {
     + '" data-url="' + url + '">'
     + '<img class="scrapbook" src="' + src
     + '" title="' + html_sanitize(title) + '"/></li>';
-    this.handleScrapbookItem(elem);
-    this.elems.scrapbook.isotope('insert', $(elem));
-    this.saveScrapbook();
+    if(typeof(Storage) !== 'undefined') {
+      var content = base.getScrapbook() + elem;
+      base.saveScrapbook(content);
+      base.showScrapbook();
+    }
+    else {
+      base.elems.scrapbook.isotope('insert', $(elem));
+    }
   },
 
   handleScrapbookItem : function (elem) {
@@ -347,7 +358,6 @@ var zenlanScrapbook = {
     }
     $.fn.modal.defaults.focusOn = base.elems.library;
     //$.fn.modal.defaults.modalOverflow = true;
-    base.showScrapbook();
     base.initIsotope(this.elems.scrapbook);
     base.showLibraryList(base.getLastBook());
     $('#scrapbooks').on('shown', function () {
@@ -369,7 +379,7 @@ var zenlanScrapbook = {
     base.elems.btnDelete.click(function(){
       base.trackEventScrapbook('btn-delete');
       base.deleteScrapbook();
-      base.showLibraryList('');
+      base.showLibraryList();
       base.showScrapbook();
     });
     base.elems.btnHide.click(function(){
