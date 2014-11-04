@@ -1,18 +1,19 @@
 // Object.create support test, and fallback for browsers without it
-if ( typeof Object.create !== "function" ) {
-  Object.create = function (o) {
-    function F() {}
+if (typeof Object.create !== "function") {
+  Object.create = function(o) {
+    function F() {
+    }
     F.prototype = o;
     return new F();
   };
 }
-if (typeof($.plugin) == 'undefined') {
+if (typeof ($.plugin) === 'undefined') {
   // Create a plugin based on a defined object
-  $.plugin = function( name, object ) {
-    $.fn[name] = function( options ) {
+  $.plugin = function(name, object) {
+    $.fn[name] = function(options) {
       return this.each(function() {
-        if ( ! $.data( this, name ) ) {
-          $.data( this, name, Object.create(object).init( options, this ) );
+        if (!$.data(this, name)) {
+          $.data(this, name, Object.create(object).init(options, this));
         }
       });
     };
@@ -23,8 +24,7 @@ jQuery(document).ready(function($) {
   $.plugin('zsbObj', zenlanScrapbook);
   var obj = {};
   $(obj).zsbObj({
-    name: "example",
-    gaEvents : false
+    name: "example"
   });
   window.zsbObj = $(obj).data('zsbObj');
   window.zsbObj.initialise();
@@ -32,35 +32,34 @@ jQuery(document).ready(function($) {
 });
 
 var zenlanScrapbook = {
-
-  default_vars : {
-    name : 'scrapbook',
-    currentBook : 'default',
-    libraryIndex : ':library',
-    gaEvents : true
+  default_vars: {
+    name: 'scrapbook',
+    libraryIndex: ':library',
+    currentBook: 'default',
+    gaEvents: false
   },
-  default_elems : {
-    newbook : 'newbook',
-    library : 'library',
-    btnEmpty : 'btn-empty',
-    btnSave : 'btn-save',
-    btnDelete : 'btn-delete',
-    scrapbook : 'scrapbook-list',
-    object : 'object',
-    btnRemove : 'btn-object-remove',
-    btnHide : 'btn-object-hide',
-    btnLink : 'btn-object-link',
-    objectTitle : 'object-title',
-    objectImage : 'object-image'
+  default_elems: {
+    newbook: 'newbook',
+    library: 'library',
+    btnEmpty: 'btn-empty',
+    btnSave: 'btn-save',
+    btnDelete: 'btn-delete',
+    btnExport: 'btn-export',
+    scrapbook: 'scrapbook-list',
+    object: 'scrappop',
+    btnRemove: 'scrap-object-remove',
+    btnLink: 'scrap-object-link',
+    objectSource: 'scrap-object-source',
+    objectTitle: 'scrap-object-title',
+    objectImage: 'scrap-object-image',
+    objectBook: 'scrap-current-book'
   },
-
-  log : function(msg) {
+  log: function(msg) {
     console.log(msg);
   },
-
-  init : function ( options, elem ) {
+  init: function(options, elem) {
     var base = this;
-    base.options = $.extend( {}, base.default_vars, options );
+    base.options = $.extend({}, base.default_vars, options);
     if (base.options.name.length > 0) {
       base.options.libraryIndex = base.options.name + ':library';
     }
@@ -70,93 +69,147 @@ var zenlanScrapbook = {
     });
     return base;
   },
-
-  getOptions : function () {
+  getOptions: function() {
     return this.options;
   },
-
-  getOption : function (name) {
+  getOption: function(name) {
     if (this.options.hasOwnProperty(name)) {
       return this.options[name];
     }
     return false;
   },
-
-  setOption : function (name, value) {
+  setOption: function(name, value) {
     if (this.options.hasOwnProperty(name)) {
       this.options[name] = value;
       return true;
     }
     return false;
   },
-
-  getElem : function (name) {
+  getElem: function(name) {
     if (this.elems.hasOwnProperty(name)) {
       return this.elems[name];
     }
     return false;
   },
-
-  checkVersion : function () {
-    var version = localStorage.getItem(this.options.name + ':version');
-    if (version == null) {
-      localStorage.setItem(this.options.name + ':version', '0.2.0-beta');
-    }
-    else if (version != '0.2.0-beta') {
-    // need to check existing scrapbooks for attr changes
+  checkVersion: function() {
+    if (typeof (Storage) !== 'undefined') {
+      var base = this;
+      var version = localStorage.getItem(base.options.name + ':version');
+      if (version === null) {
+        localStorage.setItem(base.options.name + ':version', '0.2.0-beta');
+      }
+      else if (version !== '0.2.0-beta') {
+        // check existing scrapbooks for attr changes
+        var library = base.getLibrary();
+        var scrapbook = '', content = '';
+        $.each(library, function(i, item) {
+          scrapbook = localStorage.getItem(item);
+          if (scrapbook) {
+            content = scrapbook.replace(/\objurl/g, 'data-url');
+            if (content !== scrapbook) {
+              localStorage.setItem(item, content);
+            }
+          }
+        });
+        localStorage.setItem(this.options.name + ':version', '0.2.0-beta');
+      }
     }
   },
-
-  hideObject : function () {
+  hideObject: function() {
     this.elems.object.css('display', 'none');
   },
-
-  emptyScrapbook : function () {
+  exportScrapbook: function() {
+    var base = this;
+    var img = '', name = base.getStorageName();
+    var html = '<!DOCTYPE html><html><head><title>' + name + '</title></head><body>'
+            + '<ul style="list-style-type:none;">';
+    var items = base.elems.scrapbook.find('li');
+    $(items).each(function() {
+      img = $(this).find('img');
+      html = html + '<li style="display:inline;' + $(this).attr('style') + '">'
+              + '<a href="' + $(this).attr('data-url') + '" target="_blank">'
+              + '<img src="' + $(img).attr('src') + '" title="' + $(img).attr('title') + '"/>'
+              + '</a></li>';
+    });
+    html = html + '</ul></body></html>';
+    var link = document.createElement('a');
+    link.download = 'scrapbook_' + name + '.html';
+    link.href = 'data:,' + html;
+    link.click();
+  },
+  emptyScrapbook: function() {
     var base = this;
     base.hideObject();
     localStorage.removeItem(base.getStorageName());
     base.resetIsotope(base.elems.scrapbook);
   },
-
-  showScrapbook : function () {
+  showLoading: function(status) {
+    this.elems.btnLoading = $('#btn-loading');
+    if (status) {
+      this.elems.btnLoading.html('');
+      this.elems.btnLoading.attr('title', 'loading');
+      this.elems.btnLoading.addClass('loading loading-sm');
+    }
+    else {
+      this.elems.btnLoading.html('<i class="glyphicon glyphicon-ok-circle"></i>');
+      this.elems.btnLoading.attr('title', 'loaded');
+      this.elems.btnLoading.removeClass('loading loading-sm');
+    }
+  },
+  showScrapbook: function() {
     var base = this;
+    base.showLoading(true);
     base.hideObject();
     base.elems.newbook.val('');
     base.elems.scrapbook.empty();
     base.resetIsotope(base.elems.scrapbook);
     try {
       var $items = $(base.getScrapbook());
-      $items.imagesLoaded(function(){
-        $items.each(function(){
-          base.handleScrapbookItem($(this));
+      var id = '', dup = [], unq = [];
+      $items.imagesLoaded(function() {
+        $items.each(function(i, item) {
+          id = $(item).attr('id');
+          if ($.inArray(id, unq) > -1) {
+            dup.push(i);
+          }
+          else {
+            unq.push(id);
+            base.handleScrapbookItem($(item));
+          }
         });
-        base.elems.scrapbook.isotope('insert', $items, function(){
+        var i = dup.length;
+        while (i--) {
+          $items.splice(dup[i], 1);
+        }
+        base.elems.scrapbook.isotope('insert', $items, function() {
           base.saveScrapbook();
         });
-      //this.elems.btnScrap.text(this.options.currentbook);
+        base.showLoading(false);
       });
     } catch (error) {
-      console.error("Corrupt scrapbook deleted: " + error);
+      console.log("Corrupt scrapbook deleted: " + error);
       base.emptyScrapbook();
+      base.showLoading(false);
     }
   },
-
-  getLastBook : function () {
+  getLastBook: function() {
     var scrapbookname = localStorage.getItem(this.options.name + ':scrapbook');
-    if (scrapbookname == null) {
+    if ((scrapbookname === null) || (scrapbookname.length === 0)) {
       scrapbookname = 'default';
       localStorage.setItem(this.options.name + ':scrapbook', scrapbookname);
     }
     return scrapbookname;
   },
-
-  showLibraryList : function (selected) {
+  showLastBook: function() {
+    this.elems.objectBook.text('"' + this.parseStorageName(this.getLastBook()) + '"');
+  },
+  showLibraryList: function(selected) {
     var base = this;
     base.elems.library.empty();
     base.elems.newbook.val('');
     var library = base.getLibrary();
-    $.each(library, function(i,item) {
-      if (selected == item) {
+    $.each(library, function(i, item) {
+      if (selected === item) {
         base.elems.library.append('<option value="' + item + '" selected>' + base.parseStorageName(item) + '</option>');
       }
       else {
@@ -164,25 +217,27 @@ var zenlanScrapbook = {
       }
     });
   },
-
-  getLibrary : function (){
+  getLibrary: function() {
     var base = this;
     var library;
-    if(typeof(Storage) !== 'undefined') {
+    if (typeof (Storage) !== 'undefined') {
       library = localStorage.getItem(base.options.libraryIndex);
-      if (library == null) {
+      if (library === null) {
         library = new Array();
       }
       else {
         library = JSON.parse(library);
-        library = library.filter( function(element, index, array) {
-          return (element != null);
+        library.sort(function(a, b) {
+          return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        library = library.filter(function(element, index, array) {
+          return (element !== null);
         });
         localStorage.setItem(base.options.libraryIndex, JSON.stringify(library));
         library = localStorage.getItem(base.options.libraryIndex);
         library = JSON.parse(library);
       }
-      if (library.length == 0) {
+      if (library.length === 0) {
         library.push(this.options.name + ':default');
         localStorage.setItem(base.options.libraryIndex, JSON.stringify(library));
         library = localStorage.getItem(base.options.libraryIndex);
@@ -194,196 +249,167 @@ var zenlanScrapbook = {
     }
     return library;
   },
-
-  storeLibrary : function (scrapbookname){
+  storeLibrary: function(scrapbookname) {
     var base = this;
-    if(typeof(Storage) !== 'undefined') {
+    if (typeof (Storage) !== 'undefined') {
       var library = base.getLibrary();
-      if ($.inArray(scrapbookname, library) == -1) {
+      if ($.inArray(scrapbookname, library) === -1) {
         library.push(scrapbookname);
         localStorage.setItem(base.options.libraryIndex, JSON.stringify(library));
         base.showLibraryList(scrapbookname);
       }
     }
   },
-
-  removeFromLibrary : function (scrapbookname){
+  removeFromLibrary: function(scrapbookname) {
     var base = this;
-    if(typeof(Storage) !== 'undefined') {
+    if (typeof (Storage) !== 'undefined') {
       var library = base.getLibrary();
       localStorage.removeItem(scrapbookname);
       i = $.inArray(scrapbookname, library);
-      if (i != -1) {
-        library.splice(i,1);
+      if (i !== -1) {
+        library.splice(i, 1);
         localStorage.setItem(base.options.libraryIndex, JSON.stringify(library));
         base.showLibraryList(scrapbookname);
       }
     }
   },
-
   /* ISOTOPE FUNCTIONS */
-
-  initIsotope : function ($container) {
+  initIsotope: function($container) {
     $container.isotope({
-      itemSelector : '.iso',
+      itemSelector: '.iso',
       layoutMode: 'masonry',
       masonry: {
-        columnWidth : 20
+        columnWidth: 20
       }
     });
   },
-
-  resetIsotope : function ($container) {
+  resetIsotope: function($container) {
     $container.empty();
     $container.isotope('destroy');
     this.initIsotope($container);
   },
-
   /* STORAGE FUNCTIONS */
-
-  getStorageName : function () {
-    var scrapbookname;
-    if (this.elems.newbook.val() == '') {
-      scrapbookname = this.elems.library.val();
+  getStorageName: function() {
+    if (this.elems.newbook.val() === '') {
+      var scrapbookname = this.elems.library.val();
     }
     else {
-      scrapbookname = this.options.name + ':' + this.elems.newbook.val();
+      var scrapbookname = this.options.name + ':' + this.elems.newbook.val();
       this.storeLibrary(scrapbookname);
     }
-    //this.elems.currentbook = 'Scrapbooks (' + this.parseStorageName(scrapbookname) + ')';
     localStorage.setItem(this.options.name + ':scrapbook', scrapbookname);
     return scrapbookname;
   },
-
-  parseStorageName : function (scrapbookname) {
-    var result = scrapbookname.substr(8);
-    return result;
+  parseStorageName: function(scrapbookname) {
+    return scrapbookname.substr(8);
   },
-
-  getScrapbook : function () {
-    var content = '';
-    if(typeof(Storage)!=='undefined') {
+  getScrapbook: function() {
+    var content = null;
+    if (typeof (Storage) !== 'undefined') {
       content = localStorage.getItem(this.getStorageName());
-      if (content == null) {
-        content = '';
-      }
+    }
+    if (content === null) {
+      content = '';
     }
     return content;
   },
-
-  saveScrapbook : function (content) {
-    if(typeof(Storage) !== 'undefined') {
-      if (typeof content == 'undefined') {
+  saveScrapbook: function(content) {
+    if (typeof (Storage) !== 'undefined') {
+      if (typeof content === 'undefined') {
         content = this.elems.scrapbook.html();
       }
       localStorage.setItem(this.getStorageName(), content);
     }
   },
-
-  deleteScrapbook : function () {
-    if(typeof(Storage) !== 'undefined') {
+  deleteScrapbook: function() {
+    if (typeof (Storage) !== 'undefined') {
       this.emptyScrapbook();
       this.removeFromLibrary(this.getStorageName());
     }
   },
-
-  addToScrapbook : function(item) {
+  addToScrapbook: function(item) {
     var base = this;
-    var id = $(item).attr('id');
-    if (id == this.elems.scrapbook.find('#' + item.id).attr('id')) {
+    var id = $(item).attr('data-id');
+    if (id === this.elems.scrapbook.find('#' + item.id).attr('id')) {
       return;
     }
-    var src, title, url;
-    if (item.hasOwnProperty('src')) {
-      src = item.src;
-      title = item.title;
-    }
-    else {
-      var img = $(item).find('img');
-      src = $(img).attr('src');
-      title = $(img).attr('title');
-    }
-    url = $(item).attr('data-url');
-    var elem = '<li class="iso" id="' + item.id
-    + '" data-url="' + url + '">'
-    + '<img class="scrapbook" src="' + src
-    + '" title="' + html_sanitize(title) + '"/></li>';
-    if(typeof(Storage) !== 'undefined') {
+    var elem = '<li class="iso" id="' + id
+            + '" data-source="' + $(item).attr('data-source')
+            + '" data-url="' + $(item).attr('data-url') + '">'
+            + '<img class="scrapbook" src="' + $(item).attr('data-src')
+            + '" title="' + html_sanitize($(item).attr('data-title')) + '"/></li>';
+    if (typeof (Storage) !== 'undefined') {
       var content = base.getScrapbook() + elem;
       base.saveScrapbook(content);
-      base.showScrapbook();
     }
     else {
       base.elems.scrapbook.isotope('insert', $(elem));
     }
   },
-
-  handleScrapbookItem : function (elem) {
+  handleScrapbookItem: function(elem) {
     var base = this;
-    $(elem).click(function(){
-      base.elems.object.css('display', 'block');
+    $(elem).on('click', function() {
       var $img = $(this).find('img');
-      base.elems.object.attr('title', $img.attr('title'));
+      base.elems.objectSource.text($(this).attr('data-source'));
       base.elems.objectTitle.text($img.attr('title'));
       base.elems.objectImage.attr('src', $img.attr('src')).attr('alt', $img.attr('title'));
-      var link = $(this).attr('data-url');
-      if (typeof(link) == 'undefined') {
-        link = $(this).attr('objurl'); // old version
-      }
-      base.elems.btnLink.attr('href', link);
+      base.elems.btnLink.attr('href', $(this).attr('data-url'));
       base.elems.btnRemove.attr('data-id', $(this).attr('id')).click(function() {
-        base.elems.object.css('display', 'none');
+        base.elems.object.modal('hide');
         var item = base.elems.scrapbook.find('#' + $(this).attr('data-id'));
-        base.elems.scrapbook.isotope('remove', item, function(){
-          base.saveScrapbook();
-        });
+        base.elems.scrapbook.isotope('remove', item).isotope('layout');
+        base.elems.scrapbook.isotope('on', 'removeComplete',
+                function(isoInstance, removedItems) {
+                  base.saveScrapbook();
+                }
+        );
       });
+      base.elems.object.modal('show');
     });
   },
-
-  trackEventScrapbook : function (action) {
-    if (this.options.gaEvents == true) {
+  trackEventScrapbook: function(action) {
+    if (this.options.gaEvents === true) {
       _gaq.push([
-        '_trackEvent',document.URL,'scrapbook',
+        '_trackEvent', document.URL, 'scrapbook',
         action + ' [' + this.getStorageName() + ' (' + this.elems.scrapbook.children().length + ')]'
-        ]);
+      ]);
     }
   },
-
-  initialise : function() {
+  initialise: function() {
     var base = this;
     base.checkVersion();
-    $.fn.modal.defaults.height = function(){
-      return $(window).height() - 165;
-    }
-    $.fn.modal.defaults.focusOn = base.elems.library;
-    //$.fn.modal.defaults.modalOverflow = true;
     base.initIsotope(this.elems.scrapbook);
-    base.showLibraryList(base.getLastBook());
-    $('#scrapbooks').on('shown', function () {
+    var lastBook = base.getLastBook();
+    base.showLibraryList(lastBook);
+    base.showLastBook();
+    $('#scrapbooks').on('shown.bs.modal', function() {
       base.trackEventScrapbook('open');
       base.showScrapbook();
     });
-    base.elems.library.change(function(){
+    base.elems.library.change(function() {
       base.trackEventScrapbook('change');
       base.showScrapbook();
+      base.showLastBook();
     });
-    base.elems.btnEmpty.click(function(){
-      base.trackEventScrapbook('btn-empty');
+    base.elems.btnEmpty.click(function() {
+      base.trackEventScrapbook('empty');
       base.emptyScrapbook();
     });
-    base.elems.btnSave.click(function(){
-      base.trackEventScrapbook('btn-save');
+    base.elems.btnSave.click(function() {
+      base.trackEventScrapbook('save');
       base.saveScrapbook();
+      base.showLastBook();
     });
-    base.elems.btnDelete.click(function(){
-      base.trackEventScrapbook('btn-delete');
+    base.elems.btnDelete.click(function() {
+      base.trackEventScrapbook('delete');
       base.deleteScrapbook();
       base.showLibraryList();
       base.showScrapbook();
+      base.showLastBook();
     });
-    base.elems.btnHide.click(function(){
-      base.hideObject();
+    base.elems.btnExport.click(function() {
+      base.trackEventScrapbook('export');
+      base.exportScrapbook();
     });
   }
-}
+};

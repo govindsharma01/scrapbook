@@ -10,17 +10,15 @@ Sample implementation included
 
 [jQuery UI](http://jqueryui.com)
 
+[Bootstrap3](http://getbootstrap.com/)
+
+"[Isotope2](http://isotope.metafizzy.co) may be used in non-commercial and personal applications for free."
+
 [JsHtmlSanitizer](https://code.google.com/p/google-caja/wiki/JsHtmlSanitizer)
-
-[Bootstrap](http://twitter.github.io/bootstrap)
-
-[Bootstrap Modal](https://github.com/jschr/bootstrap-modal) "Extends Bootstrap's native modals to provide additional functionality."
-
-"[Isotope](http://isotope.metafizzy.co) may be used in non-commercial and personal applications for free."
 
 ## Links
 
-[Demo](http://www.zenlan.com/collage)
+[Demo](http://zenlan.com/collage)
 
 [Twitter](http://twitter.com/zenlan)
 
@@ -29,7 +27,7 @@ Sample implementation included
 
 ## Copyright and license
 
-Copyright 2013 Zenlan Ltd
+Copyright 2014 Zenlan Ltd
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this work except in compliance with the License.

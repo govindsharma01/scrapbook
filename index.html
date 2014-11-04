@@ -3,9 +3,10 @@
   <head>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <title>Zenlan Scrapbook Example</title>
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link type='text/css' href="lib/bootstrap-modal.css" rel="stylesheet" />
-    <link type='text/css' href="lib/isotope.css" rel='stylesheet'/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <link rel='stylesheet' href="lib/isotope.css"/>
     <style>
       body {color:#fff;background:#000;}
       .white {color:#fff;}
@@ -29,15 +30,32 @@
         top:50px;
         clear:both;
       }
-      #results img {
+      #results-list img {
+        width: 200px;
+        height: 200px;
+        margin: 5px;
+      }
+      #scrapbook-list img {
         width: 100px;
         height: 100px;
         margin: 5px;
       }
-      .modal {
+      #scrap-object-image img {
+        width: 200px;
+        height: 200px;
+      }
+      .modal div {
         background-color: #333;
         color: #eee;
         text-align: center;
+      }
+      .modal-wide {
+        width: 98%;
+        height: auto;
+      }
+      .inline li {
+        list-style-type: none;
+        display: inline-block;
       }
     </style>
   </head>
@@ -47,75 +65,104 @@
         <h4>Zenlan Scrapbook Example</h4>
       </div>
       <div class="right">
-        <a id="btn-scrapbook" href="#scrapbooks" role="button" class="btn" data-toggle="modal" data-placement="bottom" title="scrapbooks"><i class="icon-book"></i></a>
+        <a id="btn-scrapbook" href="#scrapbooks" role="button" class="btn" data-toggle="modal" data-placement="bottom" title="scrapbooks"><span class="glyphicon glyphicon-book white"></span></a>
       </div>
     </div>
     <div id="results">
       <ul id="results-list" class="inline">
-        <li id="example1"><img src="placeholder.png" title="Image 1"></li>
-        <li id="example2"><img src="placeholder.png" title="Image 2"></li>
-        <li id="example3"><img src="placeholder.png" title="Image 3"></li>
-        <li id="example4"><img src="placeholder.png" title="Image 4"></li>
-        <li id="example5"><img src="placeholder.png" title="Image 5"></li>
-        <li id="example6"><img src="placeholder.png" title="Image 6"></li>
-        <li id="example7"><img src="placeholder.png" title="Image 7"></li>
-        <li id="example8"><img src="placeholder.png" title="Image 8"></li>
+        <li id="example0" class="iso"><img src="placeholder0.png" title="Image 0"></li>
+        <li id="example1" class="iso"><img src="placeholder1.png" title="Image 1"></li>
+        <li id="example2" class="iso"><img src="placeholder2.png" title="Image 2"></li>
+        <li id="example3" class="iso"><img src="placeholder3.png" title="Image 3"></li>
+        <li id="example4" class="iso"><img src="placeholder4.png" title="Image 4"></li>
+        <li id="example5" class="iso"><img src="placeholder5.png" title="Image 5"></li>
+        <li id="example6" class="iso"><img src="placeholder6.png" title="Image 6"></li>
+        <li id="example7" class="iso"><img src="placeholder7.png" title="Image 7"></li>
+        <li id="example8" class="iso"><img src="placeholder8.png" title="Image 8"></li>
+        <li id="example9" class="iso"><img src="placeholder9.png" title="Image 9"></li>
       </ul>
     </div>
-    <!--SCRAPBOOK-->
-    <div id="scrapbooks" class="modal container hide" tabindex="-1" role="dialog" aria-labelledby="scrapbooksLabel" aria-hidden="true">
-      <div class="modal-header">
-        <div>
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="white">&chi;</span></button>
-          <p id="scrapbooksLabel">scrapbooks</p>
-          <div class="input-append">
-            <select id="library" class="selectpicker" title="select">
-              <option value="default">default</option>
-            </select>
-            <a role="button" class="btn" id="btn-empty" title="empty"><i class="icon-remove-circle"></i></a>
-            <a role="button" class="btn" id="btn-delete" title="delete"><i class="icon-trash"></i></a>
-          </div>
-          <div class="input-append">
-            <input id="newbook" class="input input-small" type="text" value="" title="new"/>
-            <button class="btn" id="btn-save" title="save"><i class="icon-asterisk"></i></button>
-          </div>
-          <div id="object" title="object" class="hide">
-            <p>
-              <a id="btn-object-link" class="btn" href="" target="_blank" title="go to page"><i class="icon-eye-open"></i></a>
-              <a id="btn-object-remove" class="btn" title="remove"><i class="icon-remove"></i></a>
-              <a id="btn-object-hide" class="btn" title="hide"><i class="icon-circle-arrow-down"></i></a>
-            </p>
-            <p><span id="object-title">title</span></p>
-            <p><img id="object-image" src="placeholder.png" alt=""/></p>
-          </div>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div id="scrapbook" class="isotope">
-          <ul id="scrapbook-list" class="unstyled"></ul>
-        </div>
-      </div>
-    </div>
-
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="http://caja.appspot.com/html-css-sanitizer-minified.js"></script>
-    <script type="text/javascript" src="lib/bootstrap-modalmanager.js"></script>
-    <script type="text/javascript" src="lib/bootstrap-modal.js"></script>
-    <script type="text/javascript" src="lib/jquery.isotope.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//caja.appspot.com/html-css-sanitizer-minified.js"></script>
+    <script type="text/javascript" src="lib/isotope.pkgd.min.js"></script>
+    <script type="text/javascript" src="lib/imagesloaded.pkgd.min.js"></script>
     <script type="text/javascript" src="zenlan.scrapbook.js"></script>
     <script>
       jQuery(document).ready(function($) {
 
-        // example: replace with own event handler(s)
-        $('#results li').click(function(){
-          var url = 'http://www.example.com';
-          $(this).attr('data-url', url);
-          window.zsbObj.addToScrapbook(this);
-          alert('added ' + $(this).attr('id') + ' to scrapbook');
-        });
+      $('#results-list').isotope({
+      itemSelector : '.iso',
+      layoutMode: 'masonry',
+      masonry: {columnWidth : 30}
+      });
+
+      $('#results-list li').click(function(){
+      var $this = $(this);
+      $this.attr('data-id', $this.attr('id'));
+      $this.attr('data-source', 'github');
+      $this.attr('data-url', 'http://www.example.com');
+      var $img = $this.find('img');
+      $this.attr('data-src', $img.attr('src'));
+      $this.attr('data-title', $img.attr('title'));
+      window.zsbObj.addToScrapbook(this);
+      alert('added ' + $(this).attr('id') + ' to scrapbook');
+      });
       });
     </script>
+    <!--SCRAPBOOK-->
+    <div id="scrapbooks" class="modal" tabindex="-1" role="dialog" aria-labelledby="scrapbooksLabel" aria-hidden="true">
+      <div class="modal-dialog modal-wide">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="white">&chi;</span></button>
+            <p id="scrapbooksLabel"><i class="icon-book"></i>&nbsp;scrapbooks</p>
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <div class="input-group col-sm-5 col-md-offset-3">
+                  <label class="sr-only" for="newbook">new scrapbook name</label>
+                  <input id="newbook" class="form-control input-sm" type="text" value="" title="enter a new scrapbook name" placeholder="new"/>
+                  <a role="button" class="btn btn-sm btn-default input-group-addon" id="btn-save" title="save new scrapbook"><i class="glyphicon glyphicon-save"></i></a>
+<!--                </div>
+                <div class="input-group col-sm-5">-->
+                  <label class="sr-only" for="library">Library</label>
+                  <a role="button" class="btn btn-sm btn-default input-group-addon" id="btn-loading" title="loading"><i class="glyphicon glyphicon-ok-circle"></i></a>
+                  <select id="library" class="form-control input-sm" title="select">
+                    <option value="default">default</option>
+                  </select>
+                  <a role="button" class="btn btn-sm btn-default input-group-addon" id="btn-empty" title="empty this scrapbook"><i class="glyphicon glyphicon-unchecked"></i></a>
+                  <a role="button" class="btn btn-sm btn-default input-group-addon" id="btn-delete" title="delete this scrapbook"><i class="glyphicon glyphicon-trash"></i></a>
+                  <a role="button" class="btn btn-sm btn-default input-group-addon" id="btn-export" title="download this scrapbook as html (chrome browser only)"><i class="glyphicon glyphicon-cloud-download"></i></a>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-body">
+            <div id="scrapbook" class="isotope">
+              <ul id="scrapbook-list" class="inline"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="scrappop" class="modal" tabindex="-1" role="dialog" aria-labelledby="scrapbooksLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="white">&chi;</span></button>
+            <p>
+              <a id="scrap-object-link" class="btn btn-default" href="" target="_blank" title="view this item on the web (opens in new tab/window)"><i class="glyphicon glyphicon-eye-open"></i></a>
+              <a id="scrap-object-remove" class="btn btn-default" title="remove this item from current scrapbook"><i class="glyphicon glyphicon-trash"></i></a>
+            </p>
+          </div>
+          <div class="modal-body">
+            <p><span id="scrap-object-source"></span></p>
+            <p><span id="scrap-object-title">title</span></p>
+            <p><img id="scrap-object-image" src="placeholder.png" alt=""/></p>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
