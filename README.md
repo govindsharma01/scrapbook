@@ -18,7 +18,9 @@ Sample implementation included
 
 ## Links
 
-[Demo](http://zenlan.com/collage)
+[Demo](http://zenlan.com/zenlanScrapbook)
+
+[In Use](http://zenlan.com/collage)
 
 [Twitter](http://twitter.com/zenlan)
 
