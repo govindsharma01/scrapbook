@@ -6,25 +6,25 @@ Sample implementation included
 
 ## Dependencies
 
-[jQuery](http://jquery.com)
+[jQuery](https://jquery.com)
 
-[jQuery UI](http://jqueryui.com)
+[jQuery UI](https://jqueryui.com)
 
-[Bootstrap3](http://getbootstrap.com/)
+[Bootstrap3](https://getbootstrap.com/)
 
-"[Isotope2](http://isotope.metafizzy.co) may be used in non-commercial and personal applications for free."
+"[Isotope2](https://isotope.metafizzy.co) may be used in non-commercial and personal applications for free."
 
 [JsHtmlSanitizer](https://code.google.com/p/google-caja/wiki/JsHtmlSanitizer)
 
 ## Links
 
-[Demo](http://zenlan.com/zenlanScrapbook)
+[Demo](https://www.zenlan.com/zenlanScrapbook)
 
-[In Use](http://zenlan.com/collage)
+[In Use](https://www.zenlan.com/collage)
 
-[Twitter](http://twitter.com/zenlan)
+[Twitter](https://twitter.com/zenlan)
 
-[GitHub](http://github.com/zenlan)
+[GitHub](https://github.com/zenlan)
 
 
 ## Copyright and license
